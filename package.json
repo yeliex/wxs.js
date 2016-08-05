@@ -1,0 +1,34 @@
+{
+  "name": "wxs.js",
+  "version": "1.0.0",
+  "description": "wxs javascript sdk",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yeliex/wxs.js.git"
+  },
+  "keywords": [
+    "wechat",
+    "js",
+    "sdk"
+  ],
+  "author": "yeliex",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yeliex/wxs.js/issues"
+  },
+  "homepage": "https://github.com/yeliex/wxs.js#readme",
+  "devDependencies": {
+    "babel": "^6.5.2",
+    "babel-core": "^6.11.4",
+    "babel-loader": "^6.2.4",
+    "webpack": "^1.13.1"
+  },
+  "dependencies": {
+    "node.ajax": "^2.3.8",
+    "node.url": "^1.0.4"
+  }
+}
