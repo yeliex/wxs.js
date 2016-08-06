@@ -1,4 +1,7 @@
 # wxs.js
+
+[![npm](https://img.shields.io/npm/v/wxs.js.svg?style=flat-square)](https://www.npmjs.com/package/wxs.js)
+
 wxs javascript sdk
 
 ## Readme

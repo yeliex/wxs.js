@@ -165,7 +165,6 @@ const openidCallbackStacks = [];
       } else {
         if (params.code) {
           // 从服务器获取openid
-          console.log(params.code);
           const request = $.ajax(`${host}wxs/openid/57984c2ace75116230dc6464`, 'GET', {
             code: params.code,
             token: status.wxs.token,
