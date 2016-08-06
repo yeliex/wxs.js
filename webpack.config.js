@@ -7,7 +7,7 @@
 const webpack = require('webpack');
 
 module.exports = {
-  entry: 'src/index.js',
+  entry: './src/index.js',
   output: {
     path: require('path').join(__dirname, '/dist'),
     libraryTarget: "umd",
@@ -21,5 +21,17 @@ module.exports = {
         loader: "babel"
       }
     ]
-  }
+  },
+  plugins: [
+    new webpack.DefinePlugin({
+      "process.env": {
+        NODE_ENV: JSON.stringify("production")
+      }
+    }),
+    new webpack.optimize.UglifyJsPlugin({
+      compress: {
+        warnings: false
+      }
+    })
+  ]
 };
