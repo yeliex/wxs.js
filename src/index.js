@@ -75,7 +75,7 @@ const openidCallbackStacks = [];
   };
 
   const initShare = ({ title, desc, link, imgUrl, target = ['Timeline', 'AppMessage', 'QQ', 'Weibo', 'QZone'], success, cancel }) => {
-    initial(()=> {
+    init(()=> {
       const menuList = [];
 
       // hide menu items
@@ -123,7 +123,8 @@ const openidCallbackStacks = [];
     });
   };
 
-  const openid = ({ force = false, state = 'SUCCESS', fullQuery = false, callback }) => {
+  const openid = (options = {}) => {
+    const { force = true, state = 'SUCCESS', fullQuery = false, callback } = options;
     if (status.openidProcess) {
       if (typeof callback === 'function') {
         openidCallbackStacks.push(callback);
@@ -140,31 +141,48 @@ const openidCallbackStacks = [];
       });
     };
 
+    const params = location.href.parseUrl().params || {};
+
+    const goError = (errormsg) => {
+      alert(`获取openid失败: ${errormsg}`);
+
+      const a = [];
+      Object.keys(params).forEach((l)=> {
+        if (!l.match(/code|openid/g)) {
+          a.push(`${l}=${params[l]}`);
+        }
+      });
+
+      location.replace(`https://open.weixin.qq.com/connect/oauth2/authorize?appid=${status.config.appId}&redirect_uri=${encodeURI(`${location.protocol}//${location.host}${location.pathname}?${
+        a.join('&')}`)}&response_type=code&scope=snsapi_base&state=${state}#wechat_redirect`);
+      throw new Error(`Get openid: ${errormsg}`);
+    };
+
     // 首先获取地址参数
     if (!status.openid) {
-      const params = location.href.parseUrl().params || {};
       if (params.openid) {
         status.openid = params.openid;
       } else {
         if (params.code) {
           // 从服务器获取openid
-          const request = $.ajax(`${host}api/wxs/openid/57984c2ace75116230dc6464`, 'POST', {
+          console.log(params.code);
+          const request = $.ajax(`${host}wxs/openid/57984c2ace75116230dc6464`, 'GET', {
             code: params.code,
             token: status.wxs.token,
-            mobile: state.wxs.mobile
+            mobile: status.wxs.mobile
           });
           if (!request.status) {
-            alert(`获取openid失败: ${request.error}`);
-            throw new Error(`Get openid: ${request.error}`);
+            goError(request.error);
           } else {
             // 获取成功,避免刷新时code异常需要跳转
-            location.replace(location.href.split('&').map((l)=>l.replace(/^code=.{1,}$/, `openid=${request.data}`)).join('&'));
+            location.replace(location.href.split('&').map((l)=>l.replace(/code=.{1,}&?$/, `openid=${request.data}`)).join('&'));
             throw new Error('Need Rewrite');
           }
         } else {
           if (force) {
             // 跳转获取openid
             location.replace(`https://open.weixin.qq.com/connect/oauth2/authorize?appid=${status.config.appId}&redirect_uri=${encodeURI(fullQuery ? location.href : `${location.protocol}//${location.host}${location.pathname}`)}&response_type=code&scope=snsapi_base&state=${state}#wechat_redirect`);
+            throw new Error('Need code');
           }
         }
       }
@@ -176,10 +194,10 @@ const openidCallbackStacks = [];
   };
 
   const initial = ({ id, mobile, token, jsApiList = defaultJSApiList, debug = process.env.NODE_ENV !== 'production' || false }) => {
-    if (!status.config && id) {
+    if (!status.config) {
 
-      if (!id) {
-        throw new Error('wxs appid is required');
+      if (!id || !token) {
+        throw new Error('wxs appid and token is required');
       }
 
       status.wxs = { id, mobile, token };
@@ -195,5 +213,9 @@ const openidCallbackStacks = [];
     }
 
     return Object.assign({}, wx, { init, closeWindow, initShare, openid });
-  }
+  };
+
+  module.exports = {
+    Wechat: initial
+  };
 })();
