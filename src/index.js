@@ -135,9 +135,9 @@ const openidCallbackStacks = [];
     status.openidProcess = true;
 
     const doCallback = (openid) => {
+      status.openidProcess = false;
       openidCallbackStacks.forEach((func)=> {
         func(openid);
-        status.openidProcess = false;
       });
     };
 
