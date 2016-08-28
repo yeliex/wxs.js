@@ -25,7 +25,7 @@ $ npm install wxs.js --save
 </script>
  
 // With import
-import WXS from 'wxs.js';
+import { WXS: Wechat } from 'wxs.js';
 
 const Wechat = WXS({
   id: wxs appid,
@@ -34,7 +34,7 @@ const Wechat = WXS({
 }); // leave the options empty the second time
  
 // With CommonJs
-const Wechat = require('wxs.js')({
+const Wechat = require('wxs.js').Wechat({
   id: wxs appid,
   mobile: your wxs account mobile,
   token: wxs app token
