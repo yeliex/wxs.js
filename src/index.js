@@ -8,6 +8,7 @@ const $ = {
   ajax: require('node.ajax'),
   url: require('node.url')
 };
+
 const defaultJSApiList = [
   'onMenuShareTimeline',
   'onMenuShareAppMessage',
@@ -45,6 +46,25 @@ const defaultJSApiList = [
   'chooseCard',
   'openCard'
 ];
+const deviceJSApiList = [
+  'openWXDeviceLib',
+  'closeWXDeviceLib',
+  'getWXDeviceInfos',
+  'sendDataToWXDevice',
+  'startScanWXDevice',
+  'stopScanWXDevice',
+  'connectWXDevice',
+  'disconnectWXDevice',
+  'getWXDeviceTicket',
+  'configWXDeviceWiFi',
+  'onWXDeviceBindStateChange',
+  'onWXDeviceStateChange',
+  'onReceiveDataFromWXDevice',
+  'onScanWXDeviceResult',
+  'onWXDeviceBluetoothStateChange',
+  'onWXDeviceLanStateChange',
+];
+
 const host = 'https://wxs.yeliex.com/api/';
 const status = {
   wxs: {},
@@ -71,7 +91,7 @@ const closeWindow = () => {
 };
 
 const initShare = ({ title, desc, link, imgUrl, target = ['Timeline', 'AppMessage', 'QQ', 'Weibo', 'QZone'], success, cancel }) => {
-  init(()=> {
+  init(() => {
     const menuList = [];
 
     // hide menu items
@@ -132,7 +152,7 @@ const openid = (options = {}) => {
 
   const doCallback = (openid) => {
     status.openidProcess = false;
-    openidCallbackStacks.forEach((func)=> {
+    openidCallbackStacks.forEach((func) => {
       func(openid);
     });
   };
@@ -143,7 +163,7 @@ const openid = (options = {}) => {
     alert(`获取openid失败: ${errormsg}`);
 
     const a = [];
-    Object.keys(params).forEach((l)=> {
+    Object.keys(params).forEach((l) => {
       if (!l.match(/code|openid/g)) {
         a.push(`${l}=${params[l]}`);
       }
@@ -170,7 +190,7 @@ const openid = (options = {}) => {
           goError(request.error);
         } else {
           // 获取成功,避免刷新时code异常需要跳转
-          location.replace(location.href.split('&').map((l)=>l.replace(/code=.{1,}&?$/, `openid=${request.data}`)).join('&'));
+          location.replace(location.href.split('&').map((l) => l.replace(/code=.{1,}&?$/, `openid=${request.data}`)).join('&'));
           throw new Error('Need Rewrite');
         }
       } else {
@@ -188,7 +208,7 @@ const openid = (options = {}) => {
   }
 };
 
-const Wechat = ({ id, mobile, token, jsApiList = defaultJSApiList, debug = process.env.NODE_ENV !== 'production' || false } = {}) => {
+const Wechat = ({ id, mobile, token, jsApiList, device = false, debug = process.env.NODE_ENV !== 'production' || false } = {}) => {
   if (!status.config) {
 
     if (!id || !token) {
@@ -204,11 +224,15 @@ const Wechat = ({ id, mobile, token, jsApiList = defaultJSApiList, debug = proce
       throw new Error(`Wechat Config: ${request.error}`);
     }
 
+    jsApiList = device ? [].concat(defaultJSApiList, deviceJSApiList) : defaultJSApiList;
+
     status.config = Object.assign({}, request.data, { debug, jsApiList });
   }
   return Object.assign({}, wx, { init, closeWindow, initShare, openid });
 };
 
 module.exports = {
-  Wechat
+  Wechat,
+  JSApiList:defaultJSApiList,
+  deviceJSApiList
 };
