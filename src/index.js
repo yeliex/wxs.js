@@ -208,7 +208,7 @@ const openid = (options = {}) => {
   }
 };
 
-const Wechat = ({ id, mobile, token, jsApiList, device = false, debug = process.env.NODE_ENV !== 'production' || false } = {}) => {
+const Wechat = ({ id, mobile, token, jsApiList, device = false,beta = true, debug = process.env.NODE_ENV !== 'production' || false } = {}) => {
   if (!status.config) {
 
     if (!id || !token) {
@@ -226,7 +226,7 @@ const Wechat = ({ id, mobile, token, jsApiList, device = false, debug = process.
 
     jsApiList = device ? [].concat(defaultJSApiList, deviceJSApiList) : defaultJSApiList;
 
-    status.config = Object.assign({}, request.data, { debug, jsApiList });
+    status.config = Object.assign({}, request.data, { debug, jsApiList, beta });
   }
   return Object.assign({}, wx, { init, closeWindow, initShare, openid });
 };
