@@ -1,5 +1,5 @@
 {
-  "name": "wxs.js",
+  "name": "wxs",
   "version": "1.1.0",
   "description": "wxs javascript sdk",
   "main": "dist/index.js",
