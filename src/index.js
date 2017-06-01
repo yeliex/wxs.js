@@ -208,7 +208,7 @@ const openid = (options = {}) => {
   }
 };
 
-const Wechat = ({ id, mobile, token, jsApiList, device = false,beta = true, debug = process.env.NODE_ENV !== 'production' || false } = {}) => {
+const config = ({ id, mobile, token, jsApiList, device = false, beta = true, debug = process.env.NODE_ENV !== 'production' || false } = {}) => {
   if (!status.config) {
 
     if (!id || !token) {
@@ -228,11 +228,17 @@ const Wechat = ({ id, mobile, token, jsApiList, device = false,beta = true, debu
 
     status.config = Object.assign({}, request.data, { debug, jsApiList, beta });
   }
-  return Object.assign({}, wx, { init, closeWindow, initShare, openid });
 };
 
+window.Wechat = wx;
+
 module.exports = {
-  Wechat,
-  JSApiList:defaultJSApiList,
+  Wechat: wx,
+  init,
+  config,
+  closeWindow,
+  initShare,
+  openid,
+  JSApiList: defaultJSApiList,
   deviceJSApiList
 };
