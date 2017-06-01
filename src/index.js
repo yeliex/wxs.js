@@ -197,23 +197,13 @@ const openid = (options = {}) => {
   }
 };
 
-const initWechat = () => {
-  if (module && module.exports && module.exports.Wechat) {
-    module.exports.Wechat = Object.assign({}, wx, { init, closeWindow, initShare, openid });
-  }
-  return module.exports.Wechat;
-};
-
 function init(callback) {
   if (!status.configured) {
     wx.config(status.config);
   }
 
   if (typeof callback === 'function') {
-    wx.ready((...props) => {
-      initWechat();
-      callback(...props)
-    });
+    wx.ready(callback);
     wx.error(callback);
   }
 }
@@ -240,11 +230,13 @@ const config = ({ id, mobile, token, jsApiList, device = false, beta = true, deb
   }
 };
 
-const Wechat = initWechat();
-
 module.exports = {
-  Wechat,
+  Wechat:wx,
   config,
+  init,
+  closeWindow,
+  initShare,
+  openid,
   JSApiList: defaultJSApiList,
   deviceJSApiList
 };
