@@ -75,17 +75,6 @@ const status = {
 };
 const openidCallbackStacks = [];
 
-const init = (callback) => {
-  if (!status.configured) {
-    wx.config(status.config);
-  }
-
-  if (typeof callback === 'function') {
-    wx.ready(callback);
-    wx.error(callback);
-  }
-};
-
 const closeWindow = () => {
   init(wx.closeWindow);
 };
@@ -208,7 +197,28 @@ const openid = (options = {}) => {
   }
 };
 
-const Wechat = ({ id, mobile, token, jsApiList, device = false,beta = true, debug = process.env.NODE_ENV !== 'production' || false } = {}) => {
+const initWechat = () => {
+  if (module && module.exports && module.exports.Wechat) {
+    module.exports.Wechat = Object.assign({}, wx, { init, closeWindow, initShare, openid });
+  }
+  return module.exports.Wechat;
+};
+
+function init(callback) {
+  if (!status.configured) {
+    wx.config(status.config);
+  }
+
+  if (typeof callback === 'function') {
+    wx.ready((...props) => {
+      initWechat();
+      callback(...props)
+    });
+    wx.error(callback);
+  }
+}
+
+const config = ({ id, mobile, token, jsApiList, device = false, beta = true, debug = process.env.NODE_ENV !== 'production' || false } = {}) => {
   if (!status.config) {
 
     if (!id || !token) {
@@ -228,11 +238,13 @@ const Wechat = ({ id, mobile, token, jsApiList, device = false,beta = true, debu
 
     status.config = Object.assign({}, request.data, { debug, jsApiList, beta });
   }
-  return Object.assign({}, wx, { init, closeWindow, initShare, openid });
 };
+
+const Wechat = initWechat();
 
 module.exports = {
   Wechat,
-  JSApiList:defaultJSApiList,
+  config,
+  JSApiList: defaultJSApiList,
   deviceJSApiList
 };
