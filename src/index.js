@@ -62,7 +62,7 @@ const deviceJSApiList = [
   'onReceiveDataFromWXDevice',
   'onScanWXDeviceResult',
   'onWXDeviceBluetoothStateChange',
-  'onWXDeviceLanStateChange',
+  'onWXDeviceLanStateChange'
 ];
 
 const host = 'https://wxs.yeliex.com/api/';
@@ -81,7 +81,10 @@ const init = (callback) => {
   }
 
   if (typeof callback === 'function') {
-    wx.ready(callback);
+    wx.ready(()=>{
+      wx.configured =  true;
+      callback()
+    });
     wx.error(callback);
   }
 };
@@ -159,6 +162,10 @@ const openid = (options = {}) => {
 
   const params = location.href.parseUrl().params || {};
 
+  const encodeRedirectURI = (uri) => {
+    return encodeURIComponent(`https://wxs.yeliex.com/api/r/authorize?id=${status.wxs.id}&redirect=${encodeURIComponent(uri)}`);
+  };
+
   const goError = (errormsg) => {
     alert(`获取openid失败: ${errormsg}`);
 
@@ -169,7 +176,7 @@ const openid = (options = {}) => {
       }
     });
 
-    location.replace(`https://open.weixin.qq.com/connect/oauth2/authorize?appid=${status.config.appId}&redirect_uri=${encodeURI(`${location.protocol}//${location.host}${location.pathname}?${
+    location.replace(`https://open.weixin.qq.com/connect/oauth2/authorize?appid=${status.config.appId}&redirect_uri=${encodeRedirectURI(`${location.protocol}//${location.host}${location.pathname}?${
       a.join('&')}`)}&response_type=code&scope=snsapi_base&state=${state}#wechat_redirect`);
     throw new Error(`Get openid: ${errormsg}`);
   };
@@ -181,7 +188,7 @@ const openid = (options = {}) => {
     } else {
       if (params.code) {
         // 从服务器获取openid
-        const request = $.ajax(`${host}wxs/openid/57984c2ace75116230dc6464`, 'GET', {
+        const request = $.ajax(`${host}wxs/openid/${status.wxs.id}`, 'GET', {
           code: params.code,
           token: status.wxs.token,
           mobile: status.wxs.mobile
@@ -196,7 +203,7 @@ const openid = (options = {}) => {
       } else {
         if (force) {
           // 跳转获取openid
-          location.replace(`https://open.weixin.qq.com/connect/oauth2/authorize?appid=${status.config.appId}&redirect_uri=${encodeURI(fullQuery ? location.href : `${location.protocol}//${location.host}${location.pathname}`)}&response_type=code&scope=snsapi_base&state=${state}#wechat_redirect`);
+          location.replace(`https://open.weixin.qq.com/connect/oauth2/authorize?appid=${status.config.appId}&redirect_uri=${encodeRedirectURI(fullQuery ? location.href : `${location.protocol}//${location.host}${location.pathname}`)}&response_type=code&scope=snsapi_base&state=${state}#wechat_redirect`);
           throw new Error('Need code');
         }
       }
@@ -225,7 +232,6 @@ const config = ({ id, mobile, token, jsApiList, device = false, beta = true, deb
     }
 
     jsApiList = device ? [].concat(defaultJSApiList, deviceJSApiList) : defaultJSApiList;
-
     status.config = Object.assign({}, request.data, { debug, jsApiList, beta });
   }
 };
