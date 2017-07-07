@@ -82,7 +82,7 @@ const init = (callback) => {
 
   if (typeof callback === 'function') {
     wx.ready(()=>{
-      wx.configured =  true;
+      status.configured =  true;
       callback()
     });
     wx.error(callback);
