@@ -28,6 +28,10 @@
     window.WXS.openid({ info: true }).then((id) => {
       console.log(4, id);
     });
+  }).then(() => {
+    setTimeout(() => {
+      window.WXS.closeWindow();
+    }, 2000);
   });
 </script>
 </body>
