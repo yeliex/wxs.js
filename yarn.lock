@@ -1371,16 +1371,6 @@ node-pre-gyp@^0.6.36:
     tar "^2.2.1"
     tar-pack "^3.4.0"
 
-node.ajax@^2.3.8:
-  version "2.4.3"
-  resolved "http://registry.npm.taobao.org/node.ajax/download/node.ajax-2.4.3.tgz#31b2d079d372aed278394c58eff6360c7f738fb6"
-  dependencies:
-    qs "^6.2.1"
-
-node.url@^1.0.4:
-  version "1.0.8"
-  resolved "http://registry.npm.taobao.org/node.url/download/node.url-1.0.8.tgz#9cf7575f7e23108295fe4ac716b2636e30319964"
-
 nopt@^4.0.1:
   version "4.0.1"
   resolved "http://registry.npm.taobao.org/nopt/download/nopt-4.0.1.tgz#d0d4685afd5415193c8c7505602d0d17cd64474d"
@@ -1533,7 +1523,7 @@ punycode@^1.2.4, punycode@^1.4.1:
   version "1.4.1"
   resolved "http://registry.npm.taobao.org/punycode/download/punycode-1.4.1.tgz#c0d5a63b2718800ad8e1eb0fa5269c84dd41845e"
 
-qs@^6.2.1, qs@^6.3.0, qs@^6.5.0:
+qs@^6.3.0, qs@^6.5.0:
   version "6.5.0"
   resolved "http://registry.npm.taobao.org/qs/download/qs-6.5.0.tgz#8d04954d364def3efc55b5a0793e1e2c8b1e6e49"
 

@@ -36,8 +36,6 @@
   },
   "dependencies": {
     "autofetch": "^3.0.5",
-    "node.ajax": "^2.3.8",
-    "node.url": "^1.0.4",
     "qs": "^6.5.0",
     "url": "^0.11.0"
   }
