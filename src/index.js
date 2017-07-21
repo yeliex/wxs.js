@@ -1,250 +1,146 @@
-/**
- * Creator: yeliex
- * Project: wxs.js
- * Description:
- */
-const wx = require('../lib/wechat');
-const $ = {
-  ajax: require('node.ajax'),
-  url: require('node.url')
-};
+import wx from '../lib/wechat';
+import enums from '../lib/enums';
+import fetch from '../lib/fetch';
+import utils from '../lib/utils';
+import { auth } from '../lib/auth';
 
-const defaultJSApiList = [
-  'onMenuShareTimeline',
-  'onMenuShareAppMessage',
-  'onMenuShareQQ',
-  'onMenuShareWeibo',
-  'onMenuShareQZone',
-  'startRecord',
-  'stopRecord',
-  'onVoiceRecordEnd',
-  'playVoice',
-  'pauseVoice',
-  'stopVoice',
-  'onVoicePlayEnd',
-  'uploadVoice',
-  'downloadVoice',
-  'chooseImage',
-  'previewImage',
-  'uploadImage',
-  'downloadImage',
-  'translateVoice',
-  'getNetworkType',
-  'openLocation',
-  'getLocation',
-  'hideOptionMenu',
-  'showOptionMenu',
-  'hideMenuItems',
-  'showMenuItems',
-  'hideAllNonBaseMenuItem',
-  'showAllNonBaseMenuItem',
-  'closeWindow',
-  'scanQRCode',
-  'chooseWXPay',
-  'openProductSpecificView',
-  'addCard',
-  'chooseCard',
-  'openCard'
-];
-const deviceJSApiList = [
-  'openWXDeviceLib',
-  'closeWXDeviceLib',
-  'getWXDeviceInfos',
-  'sendDataToWXDevice',
-  'startScanWXDevice',
-  'stopScanWXDevice',
-  'connectWXDevice',
-  'disconnectWXDevice',
-  'getWXDeviceTicket',
-  'configWXDeviceWiFi',
-  'onWXDeviceBindStateChange',
-  'onWXDeviceStateChange',
-  'onReceiveDataFromWXDevice',
-  'onScanWXDeviceResult',
-  'onWXDeviceBluetoothStateChange',
-  'onWXDeviceLanStateChange'
-];
-
-const host = 'https://wxs.yeliex.com/api/';
-const status = {
-  wxs: {},
-  openid: null,
-  openidProcess: false,
+const flags = {
   configured: false,
-  config: null
+  inited: false,
+  openidProcess: false
 };
-const openidCallbackStacks = [];
 
-const init = (callback) => {
-  if (!status.configured) {
-    wx.config(status.config);
+const storage = {
+  openid: ''
+};
+
+const configs = {
+  wxs: {},
+  sdk: {},
+  wxconfig: {}
+};
+
+export const init = () => {
+  if (!flags.configured) {
+    throw new Error('Must call `config` before init sdk');
   }
-
-  if (typeof callback === 'function') {
-    wx.ready(()=>{
-      status.configured =  true;
-      callback()
-    });
-    wx.error(callback);
+  if (!flags.inited) {
+    wx.config(configs.wxconfig);
   }
-};
-
-const closeWindow = () => {
-  init(wx.closeWindow);
-};
-
-const initShare = ({ title, desc, link, imgUrl, target = ['Timeline', 'AppMessage', 'QQ', 'Weibo', 'QZone'], success, cancel }) => {
-  init(() => {
-    const menuList = [];
-
-    // hide menu items
-    wx.hideMenuItems({
-      menuList: ['menuItem:share:appMessage', 'menuItem:share:timeline', 'menuItem:share:qq', 'menuItem:share:weiboApp', 'menuItem:share:QZone', 'menuItem:share:facrbook']
+  return new Promise((rec, rej) => {
+    wx.ready(() => {
+      flags.inited = true;
+      rec();
     });
-
-    target.forEach((i) => {
-      wx[`onMenuShare${i}`]({
-        title,
-        desc,
-        link,
-        imgUrl,
-        success: typeof success === 'function' ? success : '',
-        cancel: typeof cancel === 'function' ? cancel : ''
-      });
-
-      switch (i.toLowerCase()) {
-        case 'appmessage': {
-          i = 'appMessage';
-          break;
-        }
-        case 'timeline': {
-          i = 'timeline';
-          break;
-        }
-        case 'qq': {
-          i = 'qq';
-          break;
-        }
-        case 'weibo': {
-          i = 'weiboApp';
-          break;
-        }
-        case 'qzone': {
-          i = 'QZone';
-          break;
-        }
-      }
-      menuList.push(`menuItem:share:${i}`);
+    wx.error((e) => {
+      rej(e.errMsg || e);
     });
-
-    // show share menu item
-    wx.showMenuItems({ menuList });
   });
 };
 
-const openid = (options = {}) => {
-  const { force = true, state = 'SUCCESS', fullQuery = false, callback } = options;
-  if (status.openidProcess) {
-    if (typeof callback === 'function') {
-      openidCallbackStacks.push(callback);
-    }
-    return;
-  }
-
-  status.openidProcess = true;
-
-  const doCallback = (openid) => {
-    status.openidProcess = false;
-    openidCallbackStacks.forEach((func) => {
-      func(openid);
-    });
-  };
-
-  const params = location.href.parseUrl().params || {};
-
-  const encodeRedirectURI = (uri) => {
-    return encodeURIComponent(`https://wxs.yeliex.com/api/r/authorize?id=${status.wxs.id}&redirect=${encodeURIComponent(uri)}`);
-  };
-
-  const goError = (errormsg) => {
-    alert(`获取openid失败: ${errormsg}`);
-
-    const a = [];
-    Object.keys(params).forEach((l) => {
-      if (!l.match(/code|openid/g)) {
-        a.push(`${l}=${params[l]}`);
-      }
-    });
-
-    location.replace(`https://open.weixin.qq.com/connect/oauth2/authorize?appid=${status.config.appId}&redirect_uri=${encodeRedirectURI(`${location.protocol}//${location.host}${location.pathname}?${
-      a.join('&')}`)}&response_type=code&scope=snsapi_base&state=${state}#wechat_redirect`);
-    throw new Error(`Get openid: ${errormsg}`);
-  };
-
-  // 首先获取地址参数
-  if (!status.openid) {
-    if (params.openid) {
-      status.openid = params.openid;
-    } else {
-      if (params.code) {
-        // 从服务器获取openid
-        const request = $.ajax(`${host}wxs/openid/${status.wxs.id}`, 'GET', {
-          code: params.code,
-          token: status.wxs.token,
-          mobile: status.wxs.mobile
-        });
-        if (!request.status) {
-          goError(request.error);
-        } else {
-          // 获取成功,避免刷新时code异常需要跳转
-          location.replace(location.href.split('&').map((l) => l.replace(/code=.{1,}&?$/, `openid=${request.data}`)).join('&'));
-          throw new Error('Need Rewrite');
-        }
-      } else {
-        if (force) {
-          // 跳转获取openid
-          location.replace(`https://open.weixin.qq.com/connect/oauth2/authorize?appid=${status.config.appId}&redirect_uri=${encodeRedirectURI(fullQuery ? location.href : `${location.protocol}//${location.host}${location.pathname}`)}&response_type=code&scope=snsapi_base&state=${state}#wechat_redirect`);
-          throw new Error('Need code');
-        }
-      }
-    }
-  }
-  if (status.openid) {
-    doCallback(status.openid);
-    return status.openid;
-  }
-};
-
-const config = ({ id, mobile, token, jsApiList, device = false, beta = true, debug = process.env.NODE_ENV !== 'production' || false } = {}) => {
-  if (!status.config) {
+export const config = (options) => {
+  if (!flags.configured) {
+    const { id, mobile, token, beta, debug } = options;
+    let { jsApiList } = options;
+    jsApiList = jsApiList || [].concat(enums.JSApiList, beta ? enums.BetaJSApiList : []);
 
     if (!id || !token) {
       throw new Error('wxs appid and token is required');
     }
 
-    status.wxs = { id, mobile, token };
+    configs.wxs = {
+      id,
+      mobile,
+      token
+    };
 
-    // 从服务器获取config
-    const request = $.ajax(`${host}wxs/config/${status.wxs.id}`);
-    if (!request.status) {
-      alert(`微信服务不可用: ${request.error}`);
-      throw new Error(`Wechat Config: ${request.error}`);
-    }
-
-    jsApiList = device ? [].concat(defaultJSApiList, deviceJSApiList) : defaultJSApiList;
-    status.config = Object.assign({}, request.data, { debug, jsApiList, beta });
+    return fetch(`https://wxs.yeliex.com/api/wxs/config/${configs.wxs.id}`).then((data) => {
+      configs.wxconfig = Object.assign({}, data, { debug, beta, jsApiList });
+      flags.configured = true;
+      flags.inited = false;
+      return configs.wxconfig;
+    }).catch((e) => {
+      console.error(e);
+      utils.alert(`微信服务不可用: ${e.error || e.message || e}`);
+      throw new Error(`Wechat config error: ${e}`);
+    });
   }
+  if (options && Object.keys(options).length > 0) {
+    console.warn(`[WXS SDK]: SDK would only configured once`);
+  }
+  return Promise.resolve();
 };
 
-window.Wechat = wx;
-
-module.exports = {
-  Wechat: wx,
-  init,
-  config,
-  closeWindow,
-  initShare,
-  openid,
-  JSApiList: defaultJSApiList,
-  deviceJSApiList
+export const closeWindow = () => {
+  return init().then(() => {
+    wx.closeWindow();
+  });
 };
+
+export const initShare = ({ title, desc, link, imgUrl, success, error, target = Object.keys(enums.shareTargets) }) => {
+  return init().then(() => {
+    wx.hideMenuItems(en);
+
+    target.forEach((key) => {
+      wx[`onMenuShare${key}`]({
+        title,
+        desc,
+        link,
+        imgUrl,
+        success: typeof success === 'function' ? success : null,
+        error: typeof error === 'function' ? error : null
+      });
+    });
+  });
+};
+
+const callbackStack = [];
+
+const handleCallback = (error, data) => {
+  callbackStack.forEach((item, index) => {
+    if (error && typeof item.rej === 'function') {
+      item.rej(error);
+    } else if (typeof item.rec === 'function') {
+      item.rec(data);
+    }
+    delete callbackStack[index];
+  });
+};
+
+export const openid = ({ info = false, state } = {}) => {
+  return new Promise((rec, rej) => {
+    if (storage.openid && !flags.openidProcess) {
+      rec(storage.openid);
+      return;
+    }
+    if (flags.openidProcess) {
+      callbackStack.push({ rec, rej });
+      return;
+    }
+    flags.openidProcess = true;
+
+    rej('start auth process');
+  }).catch(() => {
+    return auth({
+      wxsId: configs.wxs.id,
+      appId: configs.wxconfig.appId,
+      token: configs.wxs.token,
+      state,
+      info
+    });
+  }).then((data) => {
+    handleCallback(null, data);
+    flags.openidProcess = false;
+    return data;
+  }).catch((e) => {
+    handleCallback(e, null);
+    flags.openidProcess = false;
+    return Promise.resolve(e);
+  });
+};
+
+export const Wechat = wx;
+
+export const JSApiList = enums.JSApiList;
+
+export const BetaJSApiList = enums.BetaJSApiList;

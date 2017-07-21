@@ -8,13 +8,27 @@
 
 <script src="../dist/index.js"></script>
 <script>
-  console.log(Wechat);
-  var Wechat = Wechat({
-    id: '57ba66a36c8bb9623a7ba3f9',
+  window.WXS.config({
+    id: '592d3f3470ae8e4e1801e499',
     mobile: '15988545765',
     token: '726fb8c59b4398ba3d5338ac680ec383'
+  }).then(() => {
+    return window.WXS.init();
+  }).then(() => {
+    window.WXS.openid({ info: true }).then((id) => {
+      console.log(1, id);
+    });
+    window.WXS.openid({ info: true }).then((id) => {
+      console.log(2, id);
+    });
+  }).then(() => {
+    window.WXS.openid({ info: true }).then((id) => {
+      console.log(3, id);
+    });
+    window.WXS.openid({ info: true }).then((id) => {
+      console.log(4, id);
+    });
   });
-  console.log(Wechat);
 </script>
 </body>
 </html>

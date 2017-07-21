@@ -10,22 +10,24 @@ module.exports = {
   entry: './src/index.js',
   output: {
     path: require('path').join(__dirname, '/dist'),
-    libraryTarget: "umd",
-    filename: "index.js"
+    library: 'WXS',
+    libraryTarget: 'umd',
+    filename: 'index.js'
   },
   module: {
     loaders: [
       {
         test: /\.js?$/,
         exclude: /node_modules/,
-        loader: "babel"
+        loader: 'babel'
       }
     ]
   },
+  devtool: '#source-map',
   plugins: [
     new webpack.DefinePlugin({
-      "process.env": {
-        NODE_ENV: JSON.stringify("production")
+      'process.env': {
+        NODE_ENV: JSON.stringify('production')
       }
     }),
     new webpack.optimize.UglifyJsPlugin({

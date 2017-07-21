@@ -3,6 +3,7 @@
   "version": "2.2.2",
   "description": "wxs javascript sdk",
   "main": "dist/index.js",
+  "module": "src/index.js",
   "scripts": {
     "prepublish": "npm run build",
     "publish": "npm run clean",
@@ -34,7 +35,10 @@
     "webpack": "^1.13.1"
   },
   "dependencies": {
+    "autofetch": "^3.0.5",
     "node.ajax": "^2.3.8",
-    "node.url": "^1.0.4"
+    "node.url": "^1.0.4",
+    "qs": "^6.5.0",
+    "url": "^0.11.0"
   }
 }
