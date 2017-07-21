@@ -1,6 +1,6 @@
-# wxs.js
+# wxs-sdk
 
-[![npm](https://img.shields.io/npm/v/wxs.js.svg?style=flat-square)](https://www.npmjs.com/package/wxs.js)
+[![npm](https://img.shields.io/npm/v/wxs-sdk.svg?style=flat-square)](https://www.npmjs.com/package/wxs-sdk)
 
 wxs javascript sdk
 
@@ -9,7 +9,7 @@ js sdk for [wxs services](https://wxs.yeliex.com)
 
 ## Installation
 ```
-$ npm install wxs.js --save
+$ npm install wxs-sdk --save
 ```
 
 ## Usage
@@ -25,7 +25,7 @@ $ npm install wxs.js --save
 </script>
  
 // With import
-import { WXS: Wechat } from 'wxs.js';
+import { WXS: Wechat } from 'wxs-sdk';
 
 const Wechat = WXS({
   id: wxs appid,
@@ -34,7 +34,7 @@ const Wechat = WXS({
 }); // leave the options empty the second time
  
 // With CommonJs
-const Wechat = require('wxs.js').Wechat({
+const Wechat = require('wxs-sdk').Wechat({
   id: wxs appid,
   mobile: your wxs account mobile,
   token: wxs app token
