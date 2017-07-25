@@ -1,8 +1,15 @@
 {
   "presets": [
-    "es2015"
+    "babel-preset-stage-0"
   ],
-  "plugins": [
-    "transform-object-assign"
-  ]
+  "env": {
+    "cjs": {
+      "presets": [
+        "es2015"
+      ],
+      "plugins": [
+        "babel-plugin-add-module-exports"
+      ]
+    }
+  }
 }

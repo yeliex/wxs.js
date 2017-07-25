@@ -25,3 +25,6 @@ _data
 elasticsearch-*
 config/base.yaml
 typings
+dist
+/lib
+/es

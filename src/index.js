@@ -1,8 +1,8 @@
-import wx from '../lib/wechat';
-import enums from '../lib/enums';
-import fetch from '../lib/fetch';
-import utils from '../lib/utils';
-import { auth } from '../lib/auth';
+import wx from './lib/wechat';
+import enums from './lib/enums';
+import fetch from './lib/fetch';
+import utils from './lib/utils';
+import { auth } from './lib/auth';
 
 const flags = {
   configured: false,
