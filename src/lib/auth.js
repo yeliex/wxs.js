@@ -1,4 +1,4 @@
-import { parse, format } from 'url';
+import { parse, format } from './url';
 import fetch from './fetch';
 import { ScopeEnums, host } from './enums';
 
@@ -8,8 +8,8 @@ export const getUserInfo = ({ code, wxsId, token }) => {
     method: 'GET',
     query: {
       id: wxsId,
-      token
-    }
+      token,
+    },
   });
 };
 
@@ -37,16 +37,16 @@ export const redirect = ({ wxsId, appId, scope = 'base', state }) => {
             protocol: url.protocol,
             host: url.host,
             pathname: url.pathname,
-            query: url.query
-          })
+            query: url.query,
+          }),
         },
-        hash: url.hash
+        hash: url.hash,
       }),
       response_type: 'code',
       scope: ScopeEnums[scope] || ScopeEnums['code'],
-      state
+      state,
     },
-    hash: '#wechat_redirect'
+    hash: '#wechat_redirect',
   }));
 };
 
@@ -60,16 +60,18 @@ export const auth = ({ wxsId, appId, state, info, token }) => {
       code: url.query.code,
       appId,
       wxsId,
-      token
+      token,
     });
   } else if (!info && url.query.openid) {
     return Promise.resolve(url.query.openid);
   } else {
-    return Promise.resolve(redirect({
+    redirect({
       wxsId,
       appId,
       state,
-      scope: info ? 'info' : 'base'
-    }));
+      scope: info ? 'info' : 'base',
+    });
+    return new Promise(() => {
+    });
   }
 };

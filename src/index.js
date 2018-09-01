@@ -10,6 +10,8 @@ const flags = {
   sdk: !!(window.wx && window.wx.ready),
 };
 
+export const Wechat = window.wx;
+
 const storage = {
   openid: '',
 };
@@ -30,11 +32,13 @@ const loadsdk = () => {
     script.type = 'text/javascript';
     script.onload = () => {
       flags.sdk = true;
+      exports.Wechat = window.wx;
       rec();
     };
     script.onerror = (e) => {
       rej(e);
     };
+    window.document.body.appendChild(script);
   });
 };
 
@@ -158,8 +162,6 @@ export const openid = ({ info = false, state } = {}) => {
     return Promise.resolve(e);
   });
 };
-
-export const Wechat = wx;
 
 export const JSApiList = enums.JSApiList;
 

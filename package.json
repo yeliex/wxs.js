@@ -43,7 +43,6 @@
     "LICENSE"
   ],
   "devDependencies": {
-    "babel": "^6.5.2",
     "babel-cli": "^6.24.1",
     "babel-core": "^6.11.4",
     "babel-loader": "^7.1.1",
@@ -54,12 +53,9 @@
     "cross-env": "^5.0.1",
     "lodash.clonedeep": "^4.5.0",
     "webpack": "^3.3.0",
-    "webpack-dev-server": "^2.6.1"
+    "webpack-dev-server": "^2.6.1",
+    "html-webpack-plugin": "^2.29.0"
   },
   "dependencies": {
-    "autofetch": "^3.0.5",
-    "html-webpack-plugin": "^2.29.0",
-    "qs": "^6.5.0",
-    "url": "^0.11.0"
   }
 }

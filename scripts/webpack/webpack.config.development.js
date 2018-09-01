@@ -6,19 +6,17 @@ config.plugins = config.plugins || [];
 
 config.plugins.push(new webpack.DefinePlugin({
   'process.env': {
-    NODE_ENV: JSON.stringify('development')
-  }
+    NODE_ENV: JSON.stringify('development'),
+  },
 }));
 
 config.plugins.push(new htmlWebpackPlugin({
-  inject: 'body',
+  inject: 'head',
   template: './example/index.html',
   hash: false,
   cache: false,
-  chunk: ['example']
+  chunk: ['index'],
 }));
-
-config.entry = { example: ['./example/index.js'] };
 
 config.devServer = {
   compress: false,
@@ -27,12 +25,12 @@ config.devServer = {
   port: '17079',
   overlay: {
     warnings: false,
-    errors: true
+    errors: true,
   },
   publicPath: 'http://127.0.0.1:17079',
   historyApiFallback: {
-    index: '/example.html'
-  }
+    index: '/example.html',
+  },
 };
 
 module.exports = config;

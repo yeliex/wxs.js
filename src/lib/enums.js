@@ -57,7 +57,7 @@ exports.BetaJSApiList = [
 
 exports.host = 'https://wxs.yeliex.com/api/';
 
-exports.sdk = 'http://res.wx.qq.com/open/js/jweixin-1.2.0.js';
+exports.sdk = 'https://res.wx.qq.com/open/js/jweixin-1.2.0.js';
 
 exports.shareTargets = {
   Timeline: 'menuItem:share:timeline',

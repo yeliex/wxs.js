@@ -1,5 +1,5 @@
 const { host } = require('./enums');
-const { format, parse } = require('url');
+const { format, parse } = require('./url');
 
 module.exports = (url, options = {}) => {
   url = url.replace(/^\/\//, host);
