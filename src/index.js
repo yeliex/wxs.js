@@ -1,4 +1,3 @@
-import wx from './lib/wechat';
 import enums from './lib/enums';
 import fetch from './lib/fetch';
 import utils from './lib/utils';
@@ -7,33 +6,54 @@ import { auth } from './lib/auth';
 const flags = {
   configured: false,
   inited: false,
-  openidProcess: false
+  openidProcess: false,
+  sdk: !!(window.wx && window.wx.ready),
 };
 
 const storage = {
-  openid: ''
+  openid: '',
 };
 
 const configs = {
   wxs: {},
   sdk: {},
-  wxconfig: {}
+  wxconfig: {},
+};
+
+const loadsdk = () => {
+  if (flags.sdk) {
+    return Promise.resolve();
+  }
+  return new Promise((rec, rej) => {
+    const script = window.document.createElement('script');
+    script.src = enums.sdk;
+    script.type = 'text/javascript';
+    script.onload = () => {
+      flags.sdk = true;
+      rec();
+    };
+    script.onerror = (e) => {
+      rej(e);
+    };
+  });
 };
 
 export const init = () => {
   if (!flags.configured) {
     throw new Error('Must call `config` before init sdk');
   }
-  if (!flags.inited) {
-    wx.config(configs.wxconfig);
-  }
-  return new Promise((rec, rej) => {
-    wx.ready(() => {
-      flags.inited = true;
-      rec();
-    });
-    wx.error((e) => {
-      rej(e.errMsg || e);
+  return loadsdk().then(() => {
+    if (!flags.inited) {
+      wx.config(configs.wxconfig);
+    }
+    return new Promise((rec, rej) => {
+      wx.ready(() => {
+        flags.inited = true;
+        rec();
+      });
+      wx.error((e) => {
+        rej(e.errMsg || e);
+      });
     });
   });
 };
@@ -51,7 +71,7 @@ export const config = (options) => {
     configs.wxs = {
       id,
       mobile,
-      token
+      token,
     };
 
     return fetch(`https://wxs.yeliex.com/api/wxs/config/${configs.wxs.id}`).then((data) => {
@@ -88,7 +108,7 @@ export const initShare = ({ title, desc, link, imgUrl, success, error, target = 
         link,
         imgUrl,
         success: typeof success === 'function' ? success : null,
-        error: typeof error === 'function' ? error : null
+        error: typeof error === 'function' ? error : null,
       });
     });
   });
@@ -126,7 +146,7 @@ export const openid = ({ info = false, state } = {}) => {
       appId: configs.wxconfig.appId,
       token: configs.wxs.token,
       state,
-      info
+      info,
     });
   }).then((data) => {
     handleCallback(null, data);
