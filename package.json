@@ -1,6 +1,6 @@
 {
   "name": "wxs-sdk",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "description": "wxs javascript sdk",
   "main": "dist/index.js",
   "module": "lib/index.js",
@@ -56,6 +56,5 @@
     "webpack-dev-server": "^2.6.1",
     "html-webpack-plugin": "^2.29.0"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }
